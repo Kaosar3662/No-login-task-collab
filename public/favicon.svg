@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+  <rect width="32" height="32" rx="7" fill="#1a1838"/>
+  <!-- Three kanban columns -->
+  <rect x="4"  y="8" width="7" height="16" rx="2" fill="#95E1D3"/>
+  <rect x="13" y="8" width="7" height="10" rx="2" fill="#F38181"/>
+  <rect x="22" y="8" width="6" height="13" rx="2" fill="#FCE38A"/>
+</svg>

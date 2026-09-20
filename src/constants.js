@@ -1,5 +1,7 @@
 import { PALETTE, THEME_RING } from "./theme";
 
+export const GENERAL_CATEGORY_ID = "general";
+
 export const COLUMN_NAMES = [
   "Content", "Wireframe", "Design", "Development","Responsiveness", "Animation", "Testing", "Deployment", "A1 Developer",
 ];

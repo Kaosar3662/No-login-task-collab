@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo, useCallback } from "react";
+import { useState, useEffect, useMemo, useCallback, useRef } from "react";
 import { LiveList, LiveObject } from "@liveblocks/client";
 import {
   useStorage, useMutation, useOthers, useMyPresence,
@@ -10,11 +10,12 @@ import {
 } from "@dnd-kit/core";
 import { SortableContext, horizontalListSortingStrategy } from "@dnd-kit/sortable";
 import { useT, PALETTE, CURSOR_COLORS } from "../theme";
-import { uid, colColor } from "../constants";
+import { uid, colColor, GENERAL_CATEGORY_ID } from "../constants";
 import Column from "./Column";
 import CardGhost from "./CardGhost";
 import AddListForm from "./AddListForm";
 import PasteImageOverlay from "./PasteImageOverlay";
+import CategoryMenu from "./CategoryMenu";
 import { UndoRedoBtn, AddListBtn, Chip, WeboceanLogo } from "./ui";
 
 export default function Board() {
@@ -22,6 +23,57 @@ export default function Board() {
   const columns  = useStorage((root) => root.columns);
   const others   = useOthers();
   const [, updateMyPresence] = useMyPresence();
+
+  // ── Categories ─────────────────────────────────────────────────────────────
+  const categories = useStorage((root) => root.categories);
+  const categoryList = categories && categories.length
+    ? categories
+    : [{ id: GENERAL_CATEGORY_ID, name: "General" }];
+  const [selectedCategoryId, setSelectedCategoryId] = useState(GENERAL_CATEGORY_ID);
+
+  // One-time migration: older rooms have no `categories` list and columns with
+  // no `categoryId`. Backfill both without touching anything that already
+  // exists, so an existing board just becomes the "General" category.
+  const migratedRef = useRef(false);
+  const ensureMigrated = useMutation(({ storage }) => {
+    let cats = storage.get("categories");
+    if (!cats) {
+      cats = new LiveList([new LiveObject({ id: GENERAL_CATEGORY_ID, name: "General" })]);
+      storage.set("categories", cats);
+    }
+    const cols = storage.get("columns");
+    if (cols) {
+      for (let i = 0; i < cols.length; i++) {
+        const col = cols.get(i);
+        if (col.get("categoryId") == null) col.set("categoryId", GENERAL_CATEGORY_ID);
+      }
+    }
+  }, []);
+  useEffect(() => {
+    if (migratedRef.current || columns === null) return;
+    migratedRef.current = true;
+    ensureMigrated();
+  }, [columns, ensureMigrated]);
+
+  // Reset to General if the selected category no longer exists (e.g. deleted elsewhere)
+  useEffect(() => {
+    if (!categories) return;
+    if (!categories.some((c) => c.id === selectedCategoryId)) setSelectedCategoryId(GENERAL_CATEGORY_ID);
+  }, [categories, selectedCategoryId]);
+
+  const categoryColumnCounts = useMemo(() => {
+    const counts = {};
+    for (const c of columns ?? []) {
+      const id = c.categoryId ?? GENERAL_CATEGORY_ID;
+      counts[id] = (counts[id] ?? 0) + 1;
+    }
+    return counts;
+  }, [columns]);
+
+  const visibleColumns = useMemo(
+    () => (columns ?? []).filter((c) => (c.categoryId ?? GENERAL_CATEGORY_ID) === selectedCategoryId),
+    [columns, selectedCategoryId]
+  );
 
   // Live cursors
   useEffect(() => {
@@ -112,9 +164,14 @@ export default function Board() {
   }, [undo, redo, canUndo, canRedo]);
 
   // ── Column mutations ──────────────────────────────────────────────────────
-  const addColumn = useMutation(({ storage }, title) => {
+  const addColumn = useMutation(({ storage }, title, categoryId) => {
     storage.get("columns").push(
-      new LiveObject({ id: `col-${uid()}`, title, cards: new LiveList([]) })
+      new LiveObject({
+        id: `col-${uid()}`,
+        title,
+        categoryId: categoryId ?? GENERAL_CATEGORY_ID,
+        cards: new LiveList([]),
+      })
     );
   }, []);
 
@@ -130,6 +187,38 @@ export default function Board() {
     for (let i = 0; i < cols.length; i++) {
       const col = cols.get(i);
       if (col.get("id") === colId) { col.set("title", title); break; }
+    }
+  }, []);
+
+  // ── Category mutations ────────────────────────────────────────────────────
+  const addCategory = useMutation(({ storage }, name) => {
+    let cats = storage.get("categories");
+    if (!cats) {
+      cats = new LiveList([]);
+      storage.set("categories", cats);
+    }
+    cats.push(new LiveObject({ id: `cat-${uid()}`, name }));
+  }, []);
+
+  const deleteCategory = useMutation(({ storage }, categoryId) => {
+    if (categoryId === GENERAL_CATEGORY_ID) return; // General can never be deleted
+    const cols = storage.get("columns");
+    for (let i = 0; i < cols.length; i++) {
+      const id = cols.get(i).get("categoryId") ?? GENERAL_CATEGORY_ID;
+      if (id === categoryId) return; // still has columns under it — refuse
+    }
+    const cats = storage.get("categories");
+    if (!cats) return;
+    for (let i = 0; i < cats.length; i++) {
+      if (cats.get(i).get("id") === categoryId) { cats.delete(i); return; }
+    }
+  }, []);
+
+  const moveColumnToCategory = useMutation(({ storage }, colId, categoryId) => {
+    const cols = storage.get("columns");
+    for (let i = 0; i < cols.length; i++) {
+      const col = cols.get(i);
+      if (col.get("id") === colId) { col.set("categoryId", categoryId); return; }
     }
   }, []);
 
@@ -288,6 +377,15 @@ export default function Board() {
         <WeboceanLogo size={18} />
 
         <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
+          <CategoryMenu
+            categories={categoryList}
+            selectedCategoryId={selectedCategoryId}
+            onSelect={setSelectedCategoryId}
+            onCreate={addCategory}
+            onDelete={deleteCategory}
+            categoryColumnCounts={categoryColumnCounts}
+          />
+
           {others.length > 0 && (
             <Chip color={C.accent} bg={C.accent + "18"}>
               👥 {others.length + 1} online
@@ -415,10 +513,10 @@ export default function Board() {
           padding: "20px 20px 32px", overflowX: "auto", alignItems: "flex-start",
         }}>
           <SortableContext
-            items={columns.map((c) => c.id)}
+            items={visibleColumns.map((c) => c.id)}
             strategy={horizontalListSortingStrategy}
           >
-            {columns.map((col) => {
+            {visibleColumns.map((col) => {
               const dc = displayColumns.find((d) => d.id === col.id);
               return (
                 <Column
@@ -428,6 +526,10 @@ export default function Board() {
                   activeCardId={activeInfo?.card?.id ?? null}
                   onRemove={() => removeColumn(col.id)}
                   onRename={(t) => renameColumn(col.id, t)}
+                  categories={categoryList}
+                  allColumns={columns ?? []}
+                  onMoveColumnToCategory={(categoryId) => moveColumnToCategory(col.id, categoryId)}
+                  onMoveCardToColumn={(cardId, toColId) => reorderCard(cardId, col.id, toColId, Infinity)}
                 />
               );
             })}
@@ -436,7 +538,7 @@ export default function Board() {
           <div style={{ flexShrink: 0 }}>
             {addingList ? (
               <AddListForm
-                onAdd={(t) => { addColumn(t); setAddingList(false); }}
+                onAdd={(t) => { addColumn(t, selectedCategoryId); setAddingList(false); }}
                 onCancel={() => setAddingList(false)}
               />
             ) : (

@@ -2,7 +2,7 @@ import { useState } from "react";
 import { LiveList, LiveObject } from "@liveblocks/client";
 import { RoomProvider } from "./liveblocks.config";
 import { ThemeCtx, LIGHT, DARK } from "./theme";
-import { COLUMN_NAMES } from "./constants";
+import { COLUMN_NAMES, GENERAL_CATEGORY_ID } from "./constants";
 import Board from "./components/Board";
 
 export default function App() {
@@ -16,9 +16,12 @@ export default function App() {
         id="webocean-kanban-v1"
         initialPresence={{ cursor: null }}
         initialStorage={{
+          categories: new LiveList([
+            new LiveObject({ id: GENERAL_CATEGORY_ID, name: "General" }),
+          ]),
           columns: new LiveList(
             COLUMN_NAMES.map((title, i) =>
-              new LiveObject({ id: `col-${i}`, title, cards: new LiveList([]) })
+              new LiveObject({ id: `col-${i}`, title, categoryId: GENERAL_CATEGORY_ID, cards: new LiveList([]) })
             )
           ),
         }}

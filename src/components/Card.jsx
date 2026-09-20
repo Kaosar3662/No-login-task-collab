@@ -6,11 +6,13 @@ import { getPriority } from "../constants";
 import { darken } from "../utils";
 import { uploadToCloudinary } from "../cloudinary";
 import EditCardForm from "./EditCardForm";
+import MoveCardModal from "./MoveCardModal";
 import { IconBtn } from "./ui";
 
 export default function Card({
   card, columnId, accentColor, isActiveCard,
   onDelete, onToggle, onEditCard, onCyclePriority,
+  categories, allColumns, currentCategoryId, onMoveCard,
 }) {
   const { C } = useT();
   const [hover,        setHover]        = useState(false);
@@ -18,6 +20,7 @@ export default function Card({
   const [imgDropOver,  setImgDropOver]  = useState(false);
   const [imgUploading, setImgUploading] = useState(false);
   const [lightbox,     setLightbox]     = useState(false);
+  const [movingCard,   setMovingCard]   = useState(false);
 
   const isFileDrag = (e) => e.dataTransfer.types.includes("Files");
 
@@ -242,6 +245,7 @@ export default function Card({
             lineHeight:     1.45,
             margin:         0,
             wordBreak:      'break-word',
+            whiteSpace:     'pre-line',
           }}
         >
           {card.done && (
@@ -282,7 +286,7 @@ export default function Card({
           <span
             style={{
               display: 'inline-flex',
-              alignItems: 'center',
+              alignItems: 'flex-start',
               gap: 4,
               background: C.isLight
                 ? PALETTE.yellow + '22'
@@ -293,6 +297,11 @@ export default function Card({
               padding: '1px 7px',
               fontSize: 11,
               cursor: 'pointer',
+              maxWidth: '100%',
+              boxSizing: 'border-box',
+              whiteSpace: 'pre-line',
+              overflowWrap: 'anywhere',
+              wordBreak: 'break-word',
             }}
           >
             {card.author}
@@ -337,6 +346,16 @@ export default function Card({
             }}
           />
           <IconBtn
+            label="📁"
+            title="Move to category"
+            color={accentColor}
+            light={C.isLight}
+            onClick={e => {
+              e.stopPropagation();
+              setMovingCard(true);
+            }}
+          />
+          <IconBtn
             label="✕"
             title="Delete card"
             color={PALETTE.coral}
@@ -345,6 +364,18 @@ export default function Card({
               e.stopPropagation();
               onDelete();
             }}
+          />
+        </div>
+      )}
+
+      {movingCard && (
+        <div onPointerDown={(e) => e.stopPropagation()}>
+          <MoveCardModal
+            categories={categories}
+            columns={allColumns}
+            currentCategoryId={currentCategoryId}
+            onMove={(toColId) => { onMoveCard(toColId); setMovingCard(false); }}
+            onClose={() => setMovingCard(false)}
           />
         </div>
       )}

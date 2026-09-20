@@ -13,7 +13,13 @@ export default function EditCardForm({ card, accentColor, onSave, onCancel }) {
   const [image,    setImage]    = useState(card.image    || "");
   const ref = useRef();
 
-  useEffect(() => { ref.current?.focus(); }, []);
+  useEffect(() => {
+    ref.current?.focus();
+    if (ref.current) {
+      ref.current.style.height = "auto";
+      ref.current.style.height = ref.current.scrollHeight + "px";
+    }
+  }, []);
 
   const submit = () => {
     if (title.trim() || image) onSave({ title: title.trim(), priority, date, author, image });
@@ -33,16 +39,21 @@ export default function EditCardForm({ card, accentColor, onSave, onCancel }) {
       }}
       onPointerDown={(e) => e.stopPropagation()}
     >
-      <input
+      <textarea
         ref={ref}
         placeholder="Card title…"
         value={title}
-        onChange={(e) => setTitle(e.target.value)}
+        onChange={(e) => {
+          setTitle(e.target.value);
+          e.target.style.height = "auto";
+          e.target.style.height = e.target.scrollHeight + "px";
+        }}
         onKeyDown={(e) => {
-          if (e.key === "Enter")  submit();
+          if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); submit(); }
           if (e.key === "Escape") onCancel();
         }}
-        style={is}
+        rows={1}
+        style={{ ...is, resize: "none", overflow: "hidden", lineHeight: 1.4, fontFamily: "inherit" }}
       />
 
       {/* Priority picker */}

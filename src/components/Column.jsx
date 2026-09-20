@@ -6,13 +6,17 @@ import { SortableContext, verticalListSortingStrategy } from "@dnd-kit/sortable"
 import { LiveObject } from "@liveblocks/client";
 import { useMutation } from "../liveblocks.config";
 import { useT, PALETTE } from "../theme";
-import { uid, colColor, nextPriority } from "../constants";
+import { uid, colColor, nextPriority, GENERAL_CATEGORY_ID } from "../constants";
 import { uploadToCloudinary } from "../cloudinary";
+import CategoryPickerPopover from "./CategoryPickerPopover";
 import Card from "./Card";
 import AddCardForm from "./AddCardForm";
 import { AddCardBtn, SmallBtn } from "./ui";
 
-export default function Column({ column, displayCards, activeCardId, onRemove, onRename }) {
+export default function Column({
+  column, displayCards, activeCardId, onRemove, onRename,
+  categories, onMoveColumnToCategory, onMoveCardToColumn, allColumns,
+}) {
   const { C } = useT();
   const [adding,       setAdding]       = useState(false);
   const [renaming,     setRenaming]     = useState(false);
@@ -20,6 +24,8 @@ export default function Column({ column, displayCards, activeCardId, onRemove, o
   const [hdrHover,     setHdrHover]     = useState(false);
   const [colDropOver,  setColDropOver]  = useState(false);
   const [colDropping,  setColDropping]  = useState(false);
+  const [movingCol,    setMovingCol]    = useState(false);
+  const [moveAnchor,   setMoveAnchor]   = useState(null);
   const renameRef = useRef();
 
   const isFileDrag = (e) => e.dataTransfer.types.includes("Files");
@@ -285,12 +291,32 @@ export default function Column({ column, displayCards, activeCardId, onRemove, o
 
           {hdrHover && !renaming && (
             <>
+              <SmallBtn
+                title="Move to category"
+                color={cc}
+                onClick={(e) => {
+                  const r = e.currentTarget.getBoundingClientRect();
+                  setMoveAnchor({ top: r.bottom + 6, left: r.left });
+                  setMovingCol((v) => !v);
+                }}
+              >📁</SmallBtn>
               <SmallBtn title="Rename list" color={cc}           onClick={startRename}>✎</SmallBtn>
               <SmallBtn title="Remove list" color="#F38181"      onClick={onRemove}>✕</SmallBtn>
             </>
           )}
         </div>
       </div>
+
+      {movingCol && moveAnchor && (
+        <CategoryPickerPopover
+          anchor={moveAnchor}
+          categories={(categories ?? []).filter(
+            (cat) => cat.id !== (column.categoryId ?? GENERAL_CATEGORY_ID)
+          )}
+          onPick={(categoryId) => { onMoveColumnToCategory(categoryId); setMovingCol(false); }}
+          onClose={() => setMovingCol(false)}
+        />
+      )}
 
       {/* ── Cards (droppable) ── */}
       <div
@@ -334,6 +360,10 @@ export default function Column({ column, displayCards, activeCardId, onRemove, o
               onToggle={() => toggleDone(column.id, card.id)}
               onEditCard={(d) => editCard(column.id, card.id, d)}
               onCyclePriority={() => setPriority(column.id, card.id, nextPriority(card.priority))}
+              categories={categories}
+              allColumns={allColumns}
+              currentCategoryId={column.categoryId ?? GENERAL_CATEGORY_ID}
+              onMoveCard={(toColId) => onMoveCardToColumn(card.id, toColId)}
             />
           ))}
         </SortableContext>

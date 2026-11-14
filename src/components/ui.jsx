@@ -2,7 +2,6 @@ import { useState } from "react";
 import { PALETTE } from "../theme";
 import { useT } from "../theme";
 import { darken } from "../utils";
-import { NAMES_INDEX } from "../../node_modules/@jridgewell/trace-mapping/src/sourcemap-segment";
 
 export function UndoRedoBtn({ label, title, enabled, onClick }) {
   const { C } = useT();

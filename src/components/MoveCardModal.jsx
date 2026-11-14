@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
 import { useT, PALETTE } from "../theme";
 import { colColor, GENERAL_CATEGORY_ID } from "../constants";
+import Icon from "./Icon";
+import { rejectIfBlocked } from "../profanity";
 
 function NewListRow({ categoryId, onCreate }) {
   const { C } = useT();
@@ -9,7 +11,7 @@ function NewListRow({ categoryId, onCreate }) {
 
   const submit = () => {
     const t = title.trim();
-    if (t) onCreate(categoryId, t);
+    if (t && !rejectIfBlocked(t)) onCreate(categoryId, t);
     setTitle("");
     setAdding(false);
   };
@@ -120,7 +122,7 @@ export default function MoveCardModal({ categories, columns, currentCategoryId, 
               padding:      "2px 4px", borderRadius: 4,
             }}
           >
-            ✕
+            <Icon name="close" />
           </button>
         </div>
 

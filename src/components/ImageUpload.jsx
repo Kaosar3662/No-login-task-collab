@@ -1,6 +1,7 @@
 import { useState, useRef } from "react";
 import { useT, PALETTE } from "../theme";
 import { uploadToCloudinary } from "../cloudinary";
+import Icon from "./Icon";
 
 export default function ImageUpload({ value, onChange }) {
   const { C } = useT();
@@ -58,7 +59,7 @@ export default function ImageUpload({ value, onChange }) {
               padding:      0,
             }}
           >
-            ✕
+            <Icon name="close" />
           </button>
         </div>
       ) : (
@@ -77,7 +78,7 @@ export default function ImageUpload({ value, onChange }) {
             transition:   "all 0.15s",
           }}
         >
-          {uploading ? "⏳ Uploading…" : "🖼 Add image"}
+          {uploading ? <><Icon name="loader" /> Uploading…</> : <><Icon name="image" /> Add image</>}
         </button>
       )}
 

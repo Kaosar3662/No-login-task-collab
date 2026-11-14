@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 import { useT, PALETTE } from "../theme";
 import { inputStyle } from "../utils";
+import { rejectIfBlocked } from "../profanity";
 
 export default function AddListForm({ onAdd, onCancel }) {
   const { C } = useT();
@@ -9,7 +10,10 @@ export default function AddListForm({ onAdd, onCancel }) {
 
   useEffect(() => { ref.current?.focus(); }, []);
 
-  const submit = () => { if (val.trim()) onAdd(val.trim()); };
+  const submit = () => {
+    if (rejectIfBlocked(val)) return;
+    if (val.trim()) onAdd(val.trim());
+  };
 
   return (
     <div style={{

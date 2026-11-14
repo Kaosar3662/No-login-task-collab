@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { useT, PALETTE } from "../theme";
 import { colColor } from "../constants";
 import { uploadToCloudinary } from "../cloudinary";
+import Icon from "./Icon";
 
 export default function PasteImageOverlay({ columns, imageFile, onAdd, onClose }) {
   const { C } = useT();
@@ -10,7 +11,6 @@ export default function PasteImageOverlay({ columns, imageFile, onAdd, onClose }
   const [preview,   setPreview]   = useState(null);
   const objectUrlRef = useRef(null);
 
-  // Build a local preview URL
   useEffect(() => {
     if (!imageFile) return;
     const url = URL.createObjectURL(imageFile);
@@ -19,7 +19,6 @@ export default function PasteImageOverlay({ columns, imageFile, onAdd, onClose }
     return () => URL.revokeObjectURL(url);
   }, [imageFile]);
 
-  // Close on Escape
   useEffect(() => {
     const onKey = (e) => { if (e.key === "Escape") onClose(); };
     window.addEventListener("keydown", onKey);
@@ -63,7 +62,6 @@ export default function PasteImageOverlay({ columns, imageFile, onAdd, onClose }
           boxShadow:    "0 24px 64px rgba(0,0,0,0.45)",
         }}
       >
-        {/* Header */}
         <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between" }}>
           <div>
             <div style={{ fontSize: 14, fontWeight: 700, color: C.text }}>
@@ -82,11 +80,10 @@ export default function PasteImageOverlay({ columns, imageFile, onAdd, onClose }
               padding:      "2px 4px", borderRadius: 4,
             }}
           >
-            ✕
+            <Icon name="close" />
           </button>
         </div>
 
-        {/* Image preview */}
         {preview && (
           <div style={{
             borderRadius: 10, overflow: "hidden",
@@ -101,7 +98,6 @@ export default function PasteImageOverlay({ columns, imageFile, onAdd, onClose }
           </div>
         )}
 
-        {/* Column list or uploading state */}
         {uploading ? (
           <div style={{
             display:        "flex", flexDirection: "column",
@@ -169,7 +165,6 @@ export default function PasteImageOverlay({ columns, imageFile, onAdd, onClose }
         )}
       </div>
 
-      {/* Spinner keyframe */}
       <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
     </div>
   );

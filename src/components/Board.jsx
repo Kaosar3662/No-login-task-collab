@@ -17,6 +17,8 @@ import AddListForm from "./AddListForm";
 import PasteImageOverlay from "./PasteImageOverlay";
 import CategoryMenu from "./CategoryMenu";
 import { UndoRedoBtn, AddListBtn, Chip, WeboceanLogo } from "./ui";
+import Icon from "./Icon";
+import BlockedToast from "./BlockedToast";
 
 export default function Board() {
   const { C, mode, toggle } = useT();
@@ -24,16 +26,12 @@ export default function Board() {
   const others   = useOthers();
   const [, updateMyPresence] = useMyPresence();
 
-  // ── Categories ─────────────────────────────────────────────────────────────
   const categories = useStorage((root) => root.categories);
   const categoryList = categories && categories.length
     ? categories
     : [{ id: GENERAL_CATEGORY_ID, name: "General" }];
   const [selectedCategoryId, setSelectedCategoryId] = useState(GENERAL_CATEGORY_ID);
 
-  // One-time migration: older rooms have no `categories` list and columns with
-  // no `categoryId`. Backfill both without touching anything that already
-  // exists, so an existing board just becomes the "General" category.
   const migratedRef = useRef(false);
   const ensureMigrated = useMutation(({ storage }) => {
     let cats = storage.get("categories");
@@ -55,7 +53,6 @@ export default function Board() {
     ensureMigrated();
   }, [columns, ensureMigrated]);
 
-  // Reset to General if the selected category no longer exists (e.g. deleted elsewhere)
   useEffect(() => {
     if (!categories) return;
     if (!categories.some((c) => c.id === selectedCategoryId)) setSelectedCategoryId(GENERAL_CATEGORY_ID);
@@ -75,7 +72,6 @@ export default function Board() {
     [columns, selectedCategoryId]
   );
 
-  // Live cursors
   useEffect(() => {
     const onMove  = (e) => updateMyPresence({ cursor: { x: e.clientX, y: e.clientY } });
     const onLeave = ()  => updateMyPresence({ cursor: null });
@@ -92,7 +88,6 @@ export default function Board() {
   const [addingList, setAddingList] = useState(false);
   const [pasteFile,  setPasteFile]  = useState(null);
 
-  // ── Cmd+V paste image ────────────────────────────────────────────────────
   useEffect(() => {
     const handlePaste = (e) => {
       if (e.target.tagName === "INPUT" || e.target.tagName === "TEXTAREA") return;
@@ -107,16 +102,13 @@ export default function Board() {
     return () => window.removeEventListener("paste", handlePaste);
   }, []);
 
-  // ── Preview columns during drag ──────────────────────────────────────────
   const displayColumns = useMemo(() => {
     if (!columns) return [];
     const snap = columns.map((col) => ({ ...col, cards: [...(col.cards ?? [])] }));
     if (!activeInfo) return snap;
 
-    // Column drag: no card preview needed — dnd-kit handles column visuals via transforms
     if (activeInfo.type !== "card") return snap;
 
-    // Card drag preview
     const srcCI = snap.findIndex((c) => c.id === activeInfo.columnId);
     if (srcCI === -1) return snap;
     const srcKI = snap[srcCI].cards.findIndex((c) => c.id === activeInfo.card.id);
@@ -145,7 +137,6 @@ export default function Board() {
     return snap;
   }, [columns, activeInfo, overInfo]);
 
-  // ── Undo / Redo ──────────────────────────────────────────────────────────
   const { undo, redo } = useHistory();
   const canUndo = useCanUndo();
   const canRedo = useCanRedo();
@@ -163,7 +154,6 @@ export default function Board() {
     return () => window.removeEventListener("keydown", onKey);
   }, [undo, redo, canUndo, canRedo]);
 
-  // ── Column mutations ──────────────────────────────────────────────────────
   const addColumn = useMutation(({ storage }, title, categoryId) => {
     storage.get("columns").push(
       new LiveObject({
@@ -190,7 +180,6 @@ export default function Board() {
     }
   }, []);
 
-  // ── Category mutations ────────────────────────────────────────────────────
   const addCategory = useMutation(({ storage }, name) => {
     let cats = storage.get("categories");
     if (!cats) {
@@ -201,11 +190,11 @@ export default function Board() {
   }, []);
 
   const deleteCategory = useMutation(({ storage }, categoryId) => {
-    if (categoryId === GENERAL_CATEGORY_ID) return; // General can never be deleted
+    if (categoryId === GENERAL_CATEGORY_ID) return;
     const cols = storage.get("columns");
     for (let i = 0; i < cols.length; i++) {
       const id = cols.get(i).get("categoryId") ?? GENERAL_CATEGORY_ID;
-      if (id === categoryId) return; // still has columns under it — refuse
+      if (id === categoryId) return;
     }
     const cats = storage.get("categories");
     if (!cats) return;
@@ -222,7 +211,6 @@ export default function Board() {
     }
   }, []);
 
-  // ── Add card (used by paste handler) ────────────────────────────────────
   const addCardToColumn = useMutation(({ storage }, colId, d) => {
     const cols = storage.get("columns");
     for (let i = 0; i < cols.length; i++) {
@@ -241,7 +229,6 @@ export default function Board() {
     }
   }, []);
 
-  // ── Column reorder ───────────────────────────────────────────────────────
   const reorderColumn = useMutation(({ storage }, fromId, toId) => {
     const cols = storage.get("columns");
     let fromI = -1, toI = -1;
@@ -253,7 +240,6 @@ export default function Board() {
     if (fromI !== -1 && toI !== -1 && fromI !== toI) cols.move(fromI, toI);
   }, []);
 
-  // ── Card reorder (cross-column) ───────────────────────────────────────────
   const reorderCard = useMutation(({ storage }, cardId, fromColId, toColId, toIndex) => {
     const cols = storage.get("columns");
     let srcColLO = null, srcCardI = -1, cardData = null;
@@ -303,7 +289,6 @@ export default function Board() {
     useSensor(PointerSensor, { activationConstraint: { distance: 6 } })
   );
 
-  // When dragging a column, ignore card droppables so columns slide correctly
   const collisionDetection = useCallback((args) => {
     if (args.active?.data?.current?.type === "column") {
       return closestCenter({
@@ -330,8 +315,8 @@ export default function Board() {
 
   return (
     <div style={{ minHeight: "100vh", background: C.pageBg, display: "flex", flexDirection: "column", position: "relative" }}>
+      <BlockedToast />
 
-      {/* Live cursors */}
       {others.map(({ connectionId, presence }) => {
         if (!presence?.cursor) return null;
         const color = CURSOR_COLORS[connectionId % CURSOR_COLORS.length];
@@ -353,14 +338,12 @@ export default function Board() {
         );
       })}
 
-      {/* Accent bar */}
       <div style={{
         height: 4,
         background: `linear-gradient(90deg, ${PALETTE.coral}, ${PALETTE.yellow}, ${PALETTE.mint}, ${PALETTE.teal})`,
         flexShrink: 0,
       }} />
 
-      {/* Header */}
       <header style={{
         background:           C.headerBg,
         backdropFilter:       C.headerBlur,
@@ -388,7 +371,7 @@ export default function Board() {
 
           {others.length > 0 && (
             <Chip color={C.accent} bg={C.accent + "18"}>
-              👥 {others.length + 1} online
+              <Icon name="users" /> {others.length + 1} online
             </Chip>
           )}
 
@@ -398,8 +381,8 @@ export default function Board() {
             border: `1px solid ${C.border}`,
             borderRadius: 8, padding: "2px 3px",
           }}>
-            <UndoRedoBtn label="↩" title="Undo  (Ctrl+Z)"        enabled={canUndo} onClick={() => canUndo && undo()} />
-            <UndoRedoBtn label="↪" title="Redo  (Ctrl+Shift+Z)"  enabled={canRedo} onClick={() => canRedo && redo()} />
+            <UndoRedoBtn label={<Icon name="undo" size={16} />} title="Undo  (Ctrl+Z)"        enabled={canUndo} onClick={() => canUndo && undo()} />
+            <UndoRedoBtn label={<Icon name="redo" size={16} />} title="Redo  (Ctrl+Shift+Z)"  enabled={canRedo} onClick={() => canRedo && redo()} />
           </div>
 
           <button
@@ -417,12 +400,11 @@ export default function Board() {
               transition:   "all 0.2s",
             }}
           >
-            {mode === "dark" ? "☀️" : "🌙"}
+            <Icon name={mode === "dark" ? "sun" : "moon"} size={18} />
           </button>
         </div>
       </header>
 
-      {/* Columns */}
       <DndContext
         sensors={sensors}
         collisionDetection={collisionDetection}
@@ -455,7 +437,6 @@ export default function Board() {
           setOverInfo(null);
           if (!savedActive || !over) return;
 
-          // Column reorder
           if (savedActive.type === "column") {
             if (savedOver?.columnId && savedOver.columnId !== savedActive.columnId) {
               reorderColumn(savedActive.columnId, savedOver.columnId);
@@ -463,7 +444,6 @@ export default function Board() {
             return;
           }
 
-          // Card reorder
           let toColId = null, toIndex = 0;
 
           if (savedOver) {
@@ -572,7 +552,6 @@ export default function Board() {
         </DragOverlay>
       </DndContext>
 
-      {/* Cmd+V paste image overlay */}
       {pasteFile && (
         <PasteImageOverlay
           columns={columns}

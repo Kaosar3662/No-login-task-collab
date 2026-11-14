@@ -8,6 +8,7 @@ import { uploadToCloudinary } from "../cloudinary";
 import EditCardForm from "./EditCardForm";
 import MoveCardModal from "./MoveCardModal";
 import { IconBtn } from "./ui";
+import Icon from "./Icon";
 
 export default function Card({
   card, columnId, accentColor, isActiveCard,
@@ -30,14 +31,11 @@ export default function Card({
     setImgDropOver(true);
   };
   const handleDragLeave = (e) => {
-    // Only clear when truly leaving this card (not entering a child)
     if (e.currentTarget.contains(e.relatedTarget)) return;
     setImgDropOver(false);
   };
   const handleDrop = async (e) => {
     if (!isFileDrag(e)) return;
-    // Don't stopPropagation — let column reset its own state.
-    // Column checks data-card to avoid creating a duplicate card.
     e.preventDefault();
     setImgDropOver(false);
     const file = [...e.dataTransfer.files].find((f) => f.type.startsWith("image/"));
@@ -46,7 +44,7 @@ export default function Card({
     try {
       const url = await uploadToCloudinary(file);
       onEditCard({ title: card.title, priority: card.priority, date: card.date, author: card.author, image: url });
-    } catch { /* silent */ }
+    } catch {}
     setImgUploading(false);
   };
 
@@ -130,10 +128,9 @@ export default function Card({
           zIndex:         19, pointerEvents: 'none',
           color:          PALETTE.teal, fontSize: 12, fontWeight: 700,
         }}>
-          🖼 Drop to set image
+          <Icon name="image" /> Drop to set image
         </div>
       )}
-      {/* Lightbox */}
       {lightbox && (
         <div
           onPointerDown={(e) => e.stopPropagation()}
@@ -175,12 +172,11 @@ export default function Card({
               lineHeight:   1,
             }}
           >
-            ✕
+            <Icon name="close" />
           </button>
         </div>
       )}
 
-      {/* Image */}
       {card.image && (
         <div
           style={{
@@ -205,7 +201,6 @@ export default function Card({
         </div>
       )}
 
-      {/* Priority badge */}
       {prio.color && (
         <div
           onClick={e => {
@@ -234,7 +229,6 @@ export default function Card({
         </div>
       )}
 
-      {/* Title (optional — image-only cards have no title) */}
       {card.title ? (
         <p
           onDoubleClick={() => setEditing(true)}
@@ -249,7 +243,7 @@ export default function Card({
           }}
         >
           {card.done && (
-            <span style={{ color: PALETTE.teal, marginRight: 5, fontWeight: 800 }}>✓</span>
+            <span style={{ color: PALETTE.teal, marginRight: 5, fontWeight: 800 }}><Icon name="check" /></span>
           )}
           {card.title}
         </p>
@@ -262,7 +256,6 @@ export default function Card({
         </p>
       )}
 
-      {/* Date */}
       {card.date && (
         <div style={{ marginTop: 7 }}>
           <span
@@ -275,12 +268,11 @@ export default function Card({
               fontSize: 11,
             }}
           >
-            📅 {card.date}
+            <Icon name="calendar" /> {card.date}
           </span>
         </div>
       )}
 
-      {/* Details */}
       {card.author && (
         <div style={{ marginTop: 6 }}>
           <span
@@ -309,7 +301,6 @@ export default function Card({
         </div>
       )}
 
-      {/* Hover actions */}
       {hover && (
         <div
           style={{
@@ -326,7 +317,7 @@ export default function Card({
           onPointerDown={e => e.stopPropagation()}
         >
           <IconBtn
-            label="✓"
+            label={<Icon name="check" />}
             title={card.done ? 'Unmark' : 'Mark done'}
             color={PALETTE.teal}
             light={C.isLight}
@@ -336,7 +327,7 @@ export default function Card({
             }}
           />
           <IconBtn
-            label="✎"
+            label={<Icon name="edit" />}
             title="Edit card"
             color={accentColor}
             light={C.isLight}
@@ -346,7 +337,7 @@ export default function Card({
             }}
           />
           <IconBtn
-            label="📁"
+            label={<Icon name="folder" />}
             title="Move to category"
             color={accentColor}
             light={C.isLight}
@@ -356,7 +347,7 @@ export default function Card({
             }}
           />
           <IconBtn
-            label="✕"
+            label={<Icon name="close" />}
             title="Delete card"
             color={PALETTE.coral}
             light={C.isLight}

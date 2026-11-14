@@ -3,6 +3,7 @@ import { useT, PALETTE } from "../theme";
 import { PRIORITIES } from "../constants";
 import { inputStyle, darken } from "../utils";
 import ImageUpload from "./ImageUpload";
+import { rejectIfBlocked } from "../profanity";
 
 export default function AddCardForm({ accentColor, onAdd, onCancel }) {
   const { C } = useT();
@@ -22,6 +23,7 @@ export default function AddCardForm({ accentColor, onAdd, onCancel }) {
   }, []);
 
   const submit = () => {
+    if (rejectIfBlocked(title, author)) return;
     if (title.trim() || image) onAdd({ title: title.trim(), priority, date, author, image });
     else onCancel();
   };
@@ -56,7 +58,6 @@ export default function AddCardForm({ accentColor, onAdd, onCancel }) {
         style={{ ...is, resize: "none", overflow: "hidden", lineHeight: 1.4, fontFamily: "inherit" }}
       />
 
-      {/* Priority picker */}
       <div style={{ marginTop: 9 }}>
         <div style={{
           fontSize: 10, color: C.muted, marginBottom: 5,

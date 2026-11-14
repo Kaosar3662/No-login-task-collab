@@ -1,6 +1,8 @@
 import { useState, useEffect, useRef } from "react";
 import { useT, PALETTE } from "../theme";
 import { colColor, GENERAL_CATEGORY_ID } from "../constants";
+import Icon from "./Icon";
+import { rejectIfBlocked } from "../profanity";
 
 export default function CategoryMenu({
   categories, selectedCategoryId, onSelect, onCreate, onDelete, categoryColumnCounts,
@@ -30,7 +32,7 @@ export default function CategoryMenu({
 
   const submitNew = () => {
     const trimmed = name.trim();
-    if (trimmed) onCreate(trimmed);
+    if (trimmed && !rejectIfBlocked(trimmed)) onCreate(trimmed);
     setName("");
     setAdding(false);
   };
@@ -51,7 +53,7 @@ export default function CategoryMenu({
           cursor:       "pointer",
         }}
       >
-        📁 {current?.name ?? "General"} <span style={{ fontSize: 10, opacity: 0.7 }}>▾</span>
+        <Icon name="folder" /> {current?.name ?? "General"} <Icon name="chevron" size={10} />
       </button>
 
       {open && (
@@ -116,7 +118,7 @@ export default function CategoryMenu({
                     fontSize:   12, padding: "4px 7px",
                   }}
                 >
-                  ✕
+                  <Icon name="close" />
                 </button>
               </div>
             );

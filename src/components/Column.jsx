@@ -12,6 +12,8 @@ import CategoryPickerPopover from "./CategoryPickerPopover";
 import Card from "./Card";
 import AddCardForm from "./AddCardForm";
 import { AddCardBtn, SmallBtn } from "./ui";
+import Icon from "./Icon";
+import { rejectIfBlocked } from "../profanity";
 
 export default function Column({
   column, displayCards, activeCardId, onRemove, onRename,
@@ -36,16 +38,13 @@ export default function Column({
     setColDropOver(true);
   };
   const handleColDragLeave = (e) => {
-    // Only clear if leaving the column entirely
     if (e.currentTarget.contains(e.relatedTarget)) return;
     setColDropOver(false);
   };
   const handleColDrop = async (e) => {
-    // Always reset drop-over state, even if a card handled the drop without stopPropagation
     setColDropOver(false);
     if (!isFileDrag(e)) return;
     e.preventDefault();
-    // If dropped onto an existing card, the card already handled it — don't create a new one
     if (e.target.closest("[data-card]")) return;
     const file = [...e.dataTransfer.files].find((f) => f.type.startsWith("image/"));
     if (!file) return;
@@ -76,8 +75,6 @@ export default function Column({
     id:   `droppable:${column.id}`,
     data: { type: "column", columnId: column.id },
   });
-
-  // ── Mutations ──────────────────────────────────────────────────────────────
 
   const addCard = useMutation(({ storage }, colId, d) => {
     const cols = storage.get("columns");
@@ -155,8 +152,6 @@ export default function Column({
     }
   }, []);
 
-  // ── Rename helpers ─────────────────────────────────────────────────────────
-
   const startRename = () => {
     setRenameV(column.title);
     setRenaming(true);
@@ -164,6 +159,10 @@ export default function Column({
   };
 
   const commitRename = () => {
+    if (rejectIfBlocked(renameV)) {
+      setRenaming(false);
+      return;
+    }
     if (renameV.trim()) onRename(renameV.trim());
     setRenaming(false);
   };
@@ -200,7 +199,6 @@ export default function Column({
           : (isOver ? `0 0 0 2px ${cc}55, ${C.colShadow}` : C.colShadow),
       }}
     >
-      {/* File drop overlay */}
       {(colDropOver || colDropping) && (
         <div style={{
           position:       "absolute", inset: 0, zIndex: 50,
@@ -209,14 +207,13 @@ export default function Column({
           flexDirection:  "column", gap: 8,
           pointerEvents:  "none", borderRadius: 12,
         }}>
-          <span style={{ fontSize: 28 }}>🖼</span>
+          <Icon name="image" size={28} />
           <span style={{ color: PALETTE.teal, fontWeight: 700, fontSize: 13 }}>
             {colDropping ? "Uploading…" : "Drop to create card"}
           </span>
         </div>
       )}
 
-      {/* ── Header (drag handle for column reorder) ── */}
       <div
         {...colAttrs}
         {...colListeners}
@@ -286,7 +283,7 @@ export default function Column({
             fontSize:     11,
             fontWeight:   700,
           }}>
-            {done > 0 && done === total ? `✓ ${total}` : total}
+            {done > 0 && done === total ? <><Icon name="check" size={10} /> {total}</> : total}
           </span>
 
           {hdrHover && !renaming && (
@@ -299,9 +296,9 @@ export default function Column({
                   setMoveAnchor({ top: r.bottom + 6, left: r.left });
                   setMovingCol((v) => !v);
                 }}
-              >📁</SmallBtn>
-              <SmallBtn title="Rename list" color={cc}           onClick={startRename}>✎</SmallBtn>
-              <SmallBtn title="Remove list" color="#F38181"      onClick={onRemove}>✕</SmallBtn>
+              ><Icon name="folder" /></SmallBtn>
+              <SmallBtn title="Rename list" color={cc}           onClick={startRename}><Icon name="edit" /></SmallBtn>
+              <SmallBtn title="Remove list" color="#F38181"      onClick={onRemove}><Icon name="close" /></SmallBtn>
             </>
           )}
         </div>
@@ -318,7 +315,6 @@ export default function Column({
         />
       )}
 
-      {/* ── Cards (droppable) ── */}
       <div
         ref={setDropRef}
         style={{
@@ -369,7 +365,6 @@ export default function Column({
         </SortableContext>
       </div>
 
-      {/* ── Add card ── */}
       <div style={{ padding: "6px 10px 10px", flexShrink: 0 }}>
         {adding ? (
           <AddCardForm

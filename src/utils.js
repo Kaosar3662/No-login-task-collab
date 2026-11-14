@@ -1,4 +1,3 @@
-/** Darkens a hex colour for use on light backgrounds */
 export function darken(hex) {
   if (!hex) return hex;
   const r = parseInt(hex.slice(1, 3), 16);
@@ -7,7 +6,6 @@ export function darken(hex) {
   return `rgb(${Math.round(r * 0.55)},${Math.round(g * 0.55)},${Math.round(b * 0.55)})`;
 }
 
-/** Shared input / textarea base style */
 export const inputStyle = (C) => ({
   width:        "100%",
   background:   C.isLight ? "#f6f4ff" : "#0e0e25",

@@ -8,7 +8,7 @@ export function darken(hex) {
 
 export const inputStyle = (C) => ({
   width:        "100%",
-  background:   C.isLight ? "#f6f4ff" : "#0e0e25",
+  background:   C.isLight ? "#f5f5f5" : "#111111",
   border:       `1px solid ${C.border}`,
   borderRadius: 5,
   color:        C.text,

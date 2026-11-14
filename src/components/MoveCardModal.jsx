@@ -51,7 +51,7 @@ function NewListRow({ categoryId, onCreate }) {
         width:        "100%",
         boxSizing:    "border-box",
         background:   "transparent",
-        border:       `1.5px solid ${PALETTE.teal}`,
+        border:       `1.5px solid ${PALETTE.brand}`,
         borderRadius: 8,
         color:        C.text,
         padding:      "8px 12px",

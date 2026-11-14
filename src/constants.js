@@ -8,10 +8,10 @@ export const COLUMN_NAMES = [
 
 export const PRIORITIES = [
   { value: "",         label: "None",     color: null           },
-  { value: "low",      label: "Low",      color: PALETTE.teal   },
-  { value: "medium",   label: "Medium",   color: PALETTE.mint   },
-  { value: "high",     label: "High",     color: PALETTE.yellow },
-  { value: "critical", label: "Critical", color: PALETTE.coral  },
+  { value: "low",      label: "Low",      get color() { return PALETTE.low; } },
+  { value: "medium",   label: "Medium",   get color() { return PALETTE.mint; } },
+  { value: "high",     label: "High",     get color() { return PALETTE.yellow; } },
+  { value: "critical", label: "Critical", get color() { return PALETTE.coral; } },
 ];
 
 export const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2);
@@ -19,7 +19,7 @@ export const uid = () => Date.now().toString(36) + Math.random().toString(36).sl
 export function colColor(id) {
   let h = 0;
   for (const ch of id) h = (h * 31 + ch.charCodeAt(0)) & 0xffff;
-  return THEME_RING[h % 4];
+  return THEME_RING[h % THEME_RING.length];
 }
 
 export function nextPriority(cur) {

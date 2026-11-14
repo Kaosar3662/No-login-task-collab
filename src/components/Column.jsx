@@ -181,11 +181,11 @@ export default function Column({
         minWidth:      240,
         maxHeight:     "calc(100vh - 90px)",
         borderRadius:  12,
-        background:    C.colBg,
+        background:    C.colBgSoft,
         border:        colDropOver
-          ? `2px dashed ${PALETTE.teal}`
+          ? `2px dashed ${PALETTE.brand}`
           : `1px solid ${isOver ? cc : C.border}`,
-        borderTop:     colDropOver ? `2px dashed ${PALETTE.teal}` : `3px solid ${cc}`,
+        borderTop:     colDropOver ? `2px dashed ${PALETTE.brand}` : `3px solid ${cc}`,
         display:       "flex",
         flexDirection: "column",
         flexShrink:    0,
@@ -195,20 +195,20 @@ export default function Column({
         transform:     CSS.Transform.toString(transform),
         transition:    [transition, "border-color 0.15s, box-shadow 0.15s"].filter(Boolean).join(", "),
         boxShadow:     colDropOver
-          ? `0 0 0 3px ${PALETTE.teal}44`
-          : (isOver ? `0 0 0 2px ${cc}55, ${C.colShadow}` : C.colShadow),
+          ? `0 0 0 3px ${PALETTE.brand}44`
+          : (isOver ? `0 0 0 2px ${cc}55` : "none"),
       }}
     >
       {(colDropOver || colDropping) && (
         <div style={{
           position:       "absolute", inset: 0, zIndex: 50,
-          background:     PALETTE.teal + "18",
+          background:     PALETTE.brand + "18",
           display:        "flex", alignItems: "center", justifyContent: "center",
           flexDirection:  "column", gap: 8,
           pointerEvents:  "none", borderRadius: 12,
         }}>
           <Icon name="image" size={28} />
-          <span style={{ color: PALETTE.teal, fontWeight: 700, fontSize: 13 }}>
+          <span style={{ color: PALETTE.brand, fontWeight: 700, fontSize: 13 }}>
             {colDropping ? "Uploading…" : "Drop to create card"}
           </span>
         </div>
@@ -262,7 +262,7 @@ export default function Column({
               flex:         1,
               fontSize:     12.5,
               fontWeight:   700,
-              color:        C.isLight ? "#1a1838" : C.text,
+              color:        C.isLight ? "#0a0a0a" : C.text,
               overflow:     "hidden",
               textOverflow: "ellipsis",
               whiteSpace:   "nowrap",
@@ -277,7 +277,7 @@ export default function Column({
         <div style={{ display: "flex", alignItems: "center", gap: 3, flexShrink: 0 }}>
           <span style={{
             background:   cc + (C.isLight ? "28" : "22"),
-            color:        C.isLight ? "#1a1838" : cc,
+            color:        C.isLight ? "#0a0a0a" : cc,
             borderRadius: 8,
             padding:      "1px 7px",
             fontSize:     11,
@@ -298,7 +298,7 @@ export default function Column({
                 }}
               ><Icon name="folder" /></SmallBtn>
               <SmallBtn title="Rename list" color={cc}           onClick={startRename}><Icon name="edit" /></SmallBtn>
-              <SmallBtn title="Remove list" color="#F38181"      onClick={onRemove}><Icon name="close" /></SmallBtn>
+              <SmallBtn title="Remove list" color="#FF7A8A"      onClick={onRemove}><Icon name="close" /></SmallBtn>
             </>
           )}
         </div>

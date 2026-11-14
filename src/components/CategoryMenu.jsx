@@ -43,7 +43,7 @@ export default function CategoryMenu({
         onClick={() => setOpen((v) => !v)}
         style={{
           display:      "flex", alignItems: "center", gap: 6,
-          background:   C.isLight ? "#f0eeff" : "#28284a",
+          background:   C.isLight ? "#ececec" : "#262626",
           border:       `1px solid ${C.border}`,
           borderRadius: 8,
           padding:      "5px 12px",
@@ -138,7 +138,7 @@ export default function CategoryMenu({
                 placeholder="Category name…"
                 style={{
                   width: "100%", boxSizing: "border-box",
-                  background: "transparent", border: `1.5px solid ${PALETTE.teal}`,
+                  background: "transparent", border: `1.5px solid ${PALETTE.brand}`,
                   borderRadius: 6, color: C.text, padding: "6px 8px", fontSize: 12.5, outline: "none",
                 }}
               />

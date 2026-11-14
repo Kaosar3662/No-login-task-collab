@@ -9,13 +9,14 @@ import {
   PointerSensor, useSensor, useSensors,
 } from "@dnd-kit/core";
 import { SortableContext, horizontalListSortingStrategy } from "@dnd-kit/sortable";
-import { useT, PALETTE, CURSOR_COLORS } from "../theme";
+import { useT, PALETTE, CURSOR_COLORS, THEME_RING } from "../theme";
 import { uid, colColor, GENERAL_CATEGORY_ID } from "../constants";
 import Column from "./Column";
 import CardGhost from "./CardGhost";
 import AddListForm from "./AddListForm";
 import PasteImageOverlay from "./PasteImageOverlay";
 import CategoryMenu from "./CategoryMenu";
+import SettingsMenu from "./SettingsMenu";
 import { UndoRedoBtn, AddListBtn, Chip, WeboceanLogo } from "./ui";
 import Icon from "./Icon";
 import BlockedToast from "./BlockedToast";
@@ -305,7 +306,7 @@ export default function Board() {
     return (
       <div style={{
         display: "flex", alignItems: "center", justifyContent: "center",
-        height: "100vh", background: C.pageBg, flexDirection: "column", gap: 12,
+        position: "fixed", inset: 0, zIndex: 5, background: C.pageBg, flexDirection: "column", gap: 12,
       }}>
         <WeboceanLogo size={22} />
         <div style={{ color: C.accent, fontSize: 13 }}>Connecting…</div>
@@ -314,7 +315,7 @@ export default function Board() {
   }
 
   return (
-    <div style={{ minHeight: "100vh", background: C.pageBg, display: "flex", flexDirection: "column", position: "relative" }}>
+    <div style={{ minHeight: "100vh", display: "flex", flexDirection: "column", position: "relative", zIndex: 1 }}>
       <BlockedToast />
 
       {others.map(({ connectionId, presence }) => {
@@ -340,7 +341,7 @@ export default function Board() {
 
       <div style={{
         height: 4,
-        background: `linear-gradient(90deg, ${PALETTE.coral}, ${PALETTE.yellow}, ${PALETTE.mint}, ${PALETTE.teal})`,
+        background: `linear-gradient(90deg, ${THEME_RING.join(", ")})`,
         flexShrink: 0,
       }} />
 
@@ -370,14 +371,14 @@ export default function Board() {
           />
 
           {others.length > 0 && (
-            <Chip color={C.accent} bg={C.accent + "18"}>
+            <Chip color={C.isLight ? "#ffffff" : "#15131A"} bg={PALETTE.brand}>
               <Icon name="users" /> {others.length + 1} online
             </Chip>
           )}
 
           <div style={{
             display: "flex", gap: 2,
-            background: C.isLight ? "#f0eeff" : "#28284a",
+            background: C.isLight ? "#ececec" : "#262626",
             border: `1px solid ${C.border}`,
             borderRadius: 8, padding: "2px 3px",
           }}>
@@ -385,11 +386,13 @@ export default function Board() {
             <UndoRedoBtn label={<Icon name="redo" size={16} />} title="Redo  (Ctrl+Shift+Z)"  enabled={canRedo} onClick={() => canRedo && redo()} />
           </div>
 
+          <SettingsMenu />
+
           <button
             onClick={toggle}
             title={mode === "dark" ? "Switch to light mode" : "Switch to dark mode"}
             style={{
-              background:   C.isLight ? "#f0eeff" : "#28284a",
+              background:   C.isLight ? "#ececec" : "#262626",
               border:       `1px solid ${C.border}`,
               borderRadius: 20,
               cursor:       "pointer",

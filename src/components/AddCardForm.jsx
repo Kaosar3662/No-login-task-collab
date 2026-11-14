@@ -37,7 +37,7 @@ export default function AddCardForm({ accentColor, onAdd, onCancel }) {
         border:       `1.5px solid ${accentColor}`,
         borderRadius: 8,
         padding:      11,
-        boxShadow:    C.isLight ? `0 4px 16px ${accentColor}30` : "none",
+        boxShadow:    "none",
       }}
       onPointerDown={(e) => e.stopPropagation()}
     >
@@ -114,14 +114,13 @@ export default function AddCardForm({ accentColor, onAdd, onCancel }) {
           onClick={submit}
           style={{
             background:   accentColor,
-            color:        C.isLight ? "#1a1838" : "#13132a",
+            color:        C.isLight ? "#0a0a0a" : "#0a0a0a",
             border:       "none",
             borderRadius: 6,
             padding:      "5px 16px",
             fontSize:     12,
             fontWeight:   700,
             cursor:       "pointer",
-            boxShadow:    `0 2px 8px ${accentColor}55`,
           }}
         >
           Add

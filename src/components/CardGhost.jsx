@@ -6,8 +6,8 @@ export default function CardGhost({ card }) {
   const prio = getPriority(card.priority);
   return (
     <div style={{
-      background:    C.isLight ? "#ffffff" : "#2c2c58",
-      border:        `2px solid ${prio.color || PALETTE.teal}`,
+      background:    C.isLight ? "#ffffff" : "#272727",
+      border:        `2px solid ${prio.color || PALETTE.brand}`,
       borderRadius:  8,
       overflow:      "hidden",
       width:         228,

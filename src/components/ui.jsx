@@ -15,12 +15,12 @@ export function UndoRedoBtn({ label, title, enabled, onClick }) {
       disabled={!enabled}
       style={{
         background:   h && enabled
-          ? (C.isLight ? PALETTE.teal + "30" : PALETTE.teal + "25")
+          ? (C.isLight ? PALETTE.brand + "30" : PALETTE.brand + "25")
           : "transparent",
         border:       "none",
         borderRadius: 5,
         color:        enabled
-          ? (h ? (C.isLight ? darken(PALETTE.teal) : PALETTE.teal) : C.text)
+          ? (h ? (C.isLight ? darken(PALETTE.brand) : PALETTE.brand) : C.text)
           : C.muted,
         cursor:       enabled ? "pointer" : "default",
         padding:      "3px 8px",
@@ -73,16 +73,16 @@ export function AddListBtn({ onClick }) {
         background:   h
           ? (C.isLight ? "#ffffff" : "rgba(255,255,255,0.07)")
           : (C.isLight ? "rgba(255,255,255,0.7)" : "rgba(255,255,255,0.04)"),
-        border:       `1.5px dashed ${h ? PALETTE.teal : C.border}`,
+        border:       `1.5px dashed ${h ? PALETTE.brand : C.border}`,
         borderRadius: 12,
-        color:        h ? (C.isLight ? darken(PALETTE.teal) : PALETTE.teal) : C.muted,
+        color:        h ? (C.isLight ? darken(PALETTE.brand) : PALETTE.brand) : C.muted,
         padding:      "14px 22px",
         cursor:       "pointer",
         fontSize:     13,
         whiteSpace:   "nowrap",
         transition:   "all 0.15s",
         width:        200,
-        boxShadow:    h ? (C.isLight ? `0 4px 16px ${PALETTE.teal}30` : "none") : "none",
+        boxShadow:    "none",
       }}
     >
       + Add list
@@ -160,7 +160,7 @@ export function Chip({ children, color, bg }) {
 export function WeboceanLogo({ size }) {
   return (
     <span style={{ fontWeight: 800, fontSize: size, letterSpacing: "-0.5px", lineHeight: 1 }}>
-      <span style={{ color: PALETTE.coral }}>Your Brand Name</span>
+      <span style={{ color: PALETTE.brand }}>Your Brand Name</span>
     </span>
   );
 }

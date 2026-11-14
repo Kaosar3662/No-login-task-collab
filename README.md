@@ -1,5 +1,7 @@
 # No-Login Task Collab
 
+![No-Login Task Collab](docs/social-preview.png)
+
 A real-time Kanban board your whole team can use instantly: open the link and start working. No sign-up, no login, no setup.
 
 **Live demo:** https://no-login-task-collab.vercel.app/

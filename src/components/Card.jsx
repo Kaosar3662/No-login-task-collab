@@ -87,16 +87,16 @@ export default function Card({
         ...transformStyle,
         background:   hover ? C.cardHover : C.cardBg,
         border:       imgDropOver
-          ? `2px dashed ${PALETTE.teal}`
+          ? `2px dashed ${PALETTE.brand}`
           : `1px solid ${hover ? C.borderLit : C.border}`,
-        borderLeft:   imgDropOver ? `2px dashed ${PALETTE.teal}` : `3px solid ${borderLeftColor}`,
+        borderLeft:   imgDropOver ? `2px dashed ${PALETTE.brand}` : `3px solid ${borderLeftColor}`,
         borderRadius: 8,
         padding:      '9px 10px',
         cursor:       isDragging ? 'grabbing' : 'grab',
         position:     'relative',
         boxShadow:    imgDropOver
-          ? `0 0 0 2px ${PALETTE.teal}55`
-          : (hover ? C.cardShadowHover : C.cardShadow),
+          ? `0 0 0 2px ${PALETTE.brand}55`
+          : 'none',
         userSelect:   'none',
         transition:   'border-color 0.1s, box-shadow 0.1s',
       }}
@@ -123,10 +123,10 @@ export default function Card({
       {imgDropOver && (
         <div style={{
           position:       'absolute', inset: 0, borderRadius: 8,
-          background:     PALETTE.teal + '18',
+          background:     PALETTE.brand + '18',
           display:        'flex', alignItems: 'center', justifyContent: 'center',
           zIndex:         19, pointerEvents: 'none',
-          color:          PALETTE.teal, fontSize: 12, fontWeight: 700,
+          color:          PALETTE.brand, fontSize: 12, fontWeight: 700,
         }}>
           <Icon name="image" /> Drop to set image
         </div>
@@ -234,7 +234,7 @@ export default function Card({
           onDoubleClick={() => setEditing(true)}
           style={{
             fontSize:       13,
-            color:          card.done ? PALETTE.teal : C.text,
+            color:          card.done ? PALETTE.brand : C.text,
             textDecoration: card.done ? 'line-through' : 'none',
             lineHeight:     1.45,
             margin:         0,
@@ -243,7 +243,7 @@ export default function Card({
           }}
         >
           {card.done && (
-            <span style={{ color: PALETTE.teal, marginRight: 5, fontWeight: 800 }}><Icon name="check" /></span>
+            <span style={{ color: PALETTE.brand, marginRight: 5, fontWeight: 800 }}><Icon name="check" /></span>
           )}
           {card.title}
         </p>
@@ -260,9 +260,9 @@ export default function Card({
         <div style={{ marginTop: 7 }}>
           <span
             style={{
-              background: C.isLight ? PALETTE.teal + '18' : C.tag,
-              color: C.isLight ? darken(PALETTE.teal) : C.muted,
-              border: `1px solid ${C.isLight ? PALETTE.teal + '44' : C.border}`,
+              background: C.isLight ? PALETTE.brand + '18' : C.tag,
+              color: C.isLight ? darken(PALETTE.brand) : C.muted,
+              border: `1px solid ${C.isLight ? PALETTE.brand + '44' : C.border}`,
               borderRadius: 4,
               padding: '1px 7px',
               fontSize: 11,
@@ -319,7 +319,7 @@ export default function Card({
           <IconBtn
             label={<Icon name="check" />}
             title={card.done ? 'Unmark' : 'Mark done'}
-            color={PALETTE.teal}
+            color={PALETTE.brand}
             light={C.isLight}
             onClick={e => {
               e.stopPropagation();

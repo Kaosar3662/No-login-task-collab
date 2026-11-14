@@ -107,10 +107,10 @@ export default function PasteImageOverlay({ columns, imageFile, onAdd, onClose }
             <div style={{
               width: 32, height: 32, borderRadius: "50%",
               border: `3px solid ${C.border}`,
-              borderTop: `3px solid ${PALETTE.teal}`,
+              borderTop: `3px solid ${PALETTE.brand}`,
               animation: "spin 0.8s linear infinite",
             }} />
-            <span style={{ color: PALETTE.teal, fontSize: 13, fontWeight: 600 }}>
+            <span style={{ color: PALETTE.brand, fontSize: 13, fontWeight: 600 }}>
               Uploading…
             </span>
           </div>

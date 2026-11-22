@@ -1,6 +1,6 @@
 import { useState, useRef } from "react";
 import { useT, PALETTE } from "../theme";
-import { uploadToCloudinary } from "../cloudinary";
+import { uploadToCloudinary, useCloudinaryEnabled } from "../cloudinary";
 import Icon from "./Icon";
 
 export default function ImageUpload({ value, onChange }) {
@@ -8,6 +8,7 @@ export default function ImageUpload({ value, onChange }) {
   const [uploading, setUploading] = useState(false);
   const [err,       setErr]       = useState(null);
   const inputRef = useRef();
+  const enabled = useCloudinaryEnabled();
 
   const handleFile = async (file) => {
     if (!file || !file.type.startsWith("image/")) return;
@@ -21,6 +22,8 @@ export default function ImageUpload({ value, onChange }) {
     }
     setUploading(false);
   };
+
+  if (!enabled && !value) return null;
 
   return (
     <div style={{ marginTop: 8 }}>

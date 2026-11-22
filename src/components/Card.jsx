@@ -4,7 +4,7 @@ import { CSS } from "@dnd-kit/utilities";
 import { useT, PALETTE } from "../theme";
 import { getPriority } from "../constants";
 import { darken } from "../utils";
-import { uploadToCloudinary } from "../cloudinary";
+import { uploadToCloudinary, cloudinaryEnabled } from "../cloudinary";
 import EditCardForm from "./EditCardForm";
 import MoveCardModal from "./MoveCardModal";
 import { IconBtn } from "./ui";
@@ -39,7 +39,7 @@ export default function Card({
     e.preventDefault();
     setImgDropOver(false);
     const file = [...e.dataTransfer.files].find((f) => f.type.startsWith("image/"));
-    if (!file) return;
+    if (!file || !cloudinaryEnabled()) return;
     setImgUploading(true);
     try {
       const url = await uploadToCloudinary(file);

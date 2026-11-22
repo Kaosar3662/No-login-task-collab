@@ -129,7 +129,7 @@ export default function MoveCardModal({ categories, columns, currentCategoryId, 
         <div style={{ overflowY: "auto", display: "flex", flexDirection: "column", gap: 14 }}>
           {groups.length === 0 && (
             <div style={{ fontSize: 12, color: C.muted, textAlign: "center", padding: "10px 0" }}>
-              No other categories yet — create one from the categories menu at the top.
+              No other categories yet. Create one from the categories menu at the top.
             </div>
           )}
           {groups.map(({ cat, cols }) => (

@@ -1,9 +1,11 @@
 import { createClient } from "@liveblocks/client";
 import { createRoomContext } from "@liveblocks/react";
+import { LIVEBLOCKS_KEY } from "./config";
 
-const client = createClient({
-  publicApiKey:
-    'pk_dev_Y1FQR6LojJu11g3VXOV1omy3ozXE-hYXP9hAP9gnRX2tmDk5F28CYjpdakI2_BiE',
+const PLACEHOLDER = "pk_dev_not_configured_placeholder_key_000000000000000000000";
+
+export const client = createClient({
+  publicApiKey: LIVEBLOCKS_KEY || PLACEHOLDER,
 });
 
 export const {

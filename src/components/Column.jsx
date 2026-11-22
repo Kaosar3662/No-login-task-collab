@@ -7,7 +7,7 @@ import { LiveObject } from "@liveblocks/client";
 import { useMutation } from "../liveblocks.config";
 import { useT, PALETTE } from "../theme";
 import { uid, colColor, nextPriority, GENERAL_CATEGORY_ID } from "../constants";
-import { uploadToCloudinary } from "../cloudinary";
+import { uploadToCloudinary, cloudinaryEnabled } from "../cloudinary";
 import CategoryPickerPopover from "./CategoryPickerPopover";
 import Card from "./Card";
 import AddCardForm from "./AddCardForm";
@@ -47,7 +47,7 @@ export default function Column({
     e.preventDefault();
     if (e.target.closest("[data-card]")) return;
     const file = [...e.dataTransfer.files].find((f) => f.type.startsWith("image/"));
-    if (!file) return;
+    if (!file || !cloudinaryEnabled()) return;
     setColDropping(true);
     try {
       const url = await uploadToCloudinary(file);

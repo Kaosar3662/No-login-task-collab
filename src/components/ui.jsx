@@ -1,3 +1,4 @@
+import { useBrand } from "../brand";
 import { useState } from "react";
 import { PALETTE } from "../theme";
 import { useT } from "../theme";
@@ -160,7 +161,7 @@ export function Chip({ children, color, bg }) {
 export function WeboceanLogo({ size }) {
   return (
     <span style={{ fontWeight: 800, fontSize: size, letterSpacing: "-0.5px", lineHeight: 1 }}>
-      <span style={{ color: PALETTE.brand }}>Your Brand Name</span>
+      <span style={{ color: PALETTE.brand }}>{useBrand()}</span>
     </span>
   );
 }

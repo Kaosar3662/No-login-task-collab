@@ -17,6 +17,8 @@ import AddListForm from "./AddListForm";
 import PasteImageOverlay from "./PasteImageOverlay";
 import CategoryMenu from "./CategoryMenu";
 import SettingsMenu from "./SettingsMenu";
+import SecurityMenu from "./SecurityMenu";
+import { cloudinaryEnabled } from "../cloudinary";
 import { UndoRedoBtn, AddListBtn, Chip, WeboceanLogo } from "./ui";
 import Icon from "./Icon";
 import BlockedToast from "./BlockedToast";
@@ -92,6 +94,7 @@ export default function Board() {
   useEffect(() => {
     const handlePaste = (e) => {
       if (e.target.tagName === "INPUT" || e.target.tagName === "TEXTAREA") return;
+      if (!cloudinaryEnabled()) return;
       const items = [...(e.clipboardData?.items ?? [])];
       const imageItem = items.find((item) => item.type.startsWith("image/"));
       if (!imageItem) return;
@@ -386,6 +389,7 @@ export default function Board() {
             <UndoRedoBtn label={<Icon name="redo" size={16} />} title="Redo  (Ctrl+Shift+Z)"  enabled={canRedo} onClick={() => canRedo && redo()} />
           </div>
 
+          <SecurityMenu />
           <SettingsMenu />
 
           <button

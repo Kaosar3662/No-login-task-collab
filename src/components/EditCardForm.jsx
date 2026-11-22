@@ -85,7 +85,7 @@ export default function EditCardForm({ card, accentColor, onSave, onCancel }) {
                   transition:   "all 0.1s",
                 }}
               >
-                {p.value ? `● ${p.label}` : "—"}
+                {p.value ? `● ${p.label}` : "None"}
               </button>
             );
           })}

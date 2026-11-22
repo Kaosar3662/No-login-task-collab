@@ -39,3 +39,14 @@ input, button, textarea {
   0%, 100% { opacity: 1;    transform: scale(1);    }
   50%       { opacity: 0.45; transform: scale(0.75); }
 }
+
+dialog:modal {
+  margin: auto;
+  overscroll-behavior: contain;
+}
+
+dialog::backdrop {
+  overflow: hidden;
+  overscroll-behavior: contain;
+  background: rgba(0, 0, 0, 0.55);
+}

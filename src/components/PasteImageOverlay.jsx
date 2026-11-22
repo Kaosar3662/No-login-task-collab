@@ -32,7 +32,7 @@ export default function PasteImageOverlay({ columns, imageFile, onAdd, onClose }
       const url = await uploadToCloudinary(imageFile);
       onAdd(colId, url);
     } catch {
-      setError("Upload failed — try again.");
+      setError("Upload failed. Try again.");
       setUploading(false);
     }
   };

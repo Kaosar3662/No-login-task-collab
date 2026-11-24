@@ -127,6 +127,14 @@ export function CloudinaryFields({ cloud, preset, setCloud, setPreset, locked })
         label="Cloudinary unsigned upload preset" value={preset} onChange={setPreset} placeholder="unsigned_preset_name"
         hint={locked ? "Set by the host's environment variables." : "Create an unsigned preset in the Cloudinary dashboard. Leave both empty to hide the image buttons."}
       />
+      {!locked && (
+        <Note>
+          Not sure where to find them?{" "}
+          <a href="https://youtu.be/BgIqJMlnZ9Q" target="_blank" rel="noopener noreferrer" style={{ color: "inherit", textDecoration: "underline" }}>
+            Watch the 1 minute video
+          </a>.
+        </Note>
+      )}
     </>
   );
 }
@@ -209,7 +217,7 @@ export function KeySetupScreen({ start = "choose" }) {
       <div style={{ height: 12 }} />
       <Note>
         Not sure where to find the key?{" "}
-        <a href="https://youtu.be/Ib5fhISTeYs" target="_blank" rel="noopener noreferrer" style={{ color: "inherit", textDecoration: "underline" }}>
+        <a href="https://youtu.be/Ib5fhlSTeYs" target="_blank" rel="noopener noreferrer" style={{ color: "inherit", textDecoration: "underline" }}>
           Watch the 1 minute video
         </a>.
       </Note>

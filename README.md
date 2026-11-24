@@ -25,7 +25,7 @@ React 18, Vite, Liveblocks (`@liveblocks/client`, `@liveblocks/react`), dnd-kit,
 
 ## Set up your own
 
-You need a free [Liveblocks](https://liveblocks.io/dashboard) project and its **public key** (starts with `pk_`). Cloudinary is optional. Video: [how to get your Liveblocks public key](https://youtu.be/Ib5fhISTeYs).
+You need a free [Liveblocks](https://liveblocks.io/dashboard) project and its **public key** (starts with `pk_`). Cloudinary is optional. Videos: [how to get your Liveblocks public key](https://youtu.be/Ib5fhlSTeYs), [how to get your Cloudinary cloud name and upload preset](https://youtu.be/BgIqJMlnZ9Q).
 
 Deploy the built site anywhere that serves static files (build command `npm run build`, output directory `dist`), then give the app the key in whichever way suits your host:
 
